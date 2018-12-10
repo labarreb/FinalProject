@@ -1,14 +1,29 @@
 Package: FinalProject
-Title: What the Package Does (one line, title case)
+Title: Prompt-Based Functions for Modeling
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.5.1)
-License: What license is it under?
+Authors@R: 
+    c(person(given = "Brian",
+           family = "LaBarre",
+           role = c("aut", "cre"),
+           email = "blabarre@ufl.edu"),
+    person(given = "Silvia",
+           family = "Jakubski",
+           role = c("aut", "cre"),
+           email = "sijakubski@ufl.edu"))
+Description: The user is able to request a type of model
+    and then input any model options and outputs that he/she
+    wishes.  After a dataset is entered, inputs include: variables,
+    interaction terms, type of distribution, and type of regression.
+    Outputs include: summary statistics, plots for diagnostics,
+    point estimates, and confidence intervals.  Basic coin flip
+    and dice roll functions are included for entertainment.
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.1.1
+Imports: 
+    MASS,
+    survival
 Suggests: 
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
