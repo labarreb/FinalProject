@@ -8,7 +8,7 @@ Authors@R:
            email = "blabarre@ufl.edu"),
     person(given = "Silvia",
            family = "Jakubski",
-           role = c("aut", "cre"),
+           role = c("aut"),
            email = "sijakubski@ufl.edu"))
 Description: The user is able to request a type of model
     and then input any model options and outputs that he/she

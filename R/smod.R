@@ -47,29 +47,29 @@ smod <- function() {
     dd <- paste(cc, "~", sep = "")
     ddd <- paste(dd, d, sep = "")
     ee <- menu(survlist, title = "Which Survival Model?: ")
+    return(ee)
     e <- survmod(ee, ddd, bb)
     h <- menu(c("Y", "N"), title = "Would you like a summary?")
-    if (h == "1") 
+    if (h == "1")
         summ <- summary(e)
-    if (cb == 1 && length(unique(rats[, as.integer(c3)]))) {
+    if (cb == 1 && ee %in% c(1:3) && length(unique(rats[, as.integer(c3)]))) {
         j <- menu(c("Y", "N"), title = "Would you like a plot of the survival curve?")
         if (j == "1") {
             kplot <- function() {
                 par(mfrow = c(1, 1))
-                plot(survfit(as.formula(ddd), data = bb), col = c(2, 
+                plot(survfit(as.formula(ddd), data = bb), col = c(2,
                   3), xlab = cc2, ylab = "Survival", main = "Survival Curve")
-                legend("bottomleft", col = c(2, 3), lty = 1, 
-                  title = names(bb)[c3], legend = c(unique(bb[, 
+                legend("bottomleft", col = c(2, 3), lty = 1,
+                  title = names(bb)[c3], legend = c(unique(bb[,
                     as.integer(c3)])[1], unique(bb[, as.integer(c3)])[2]))
             }
         }
     }
     ifelse(ee == "4", pe <- exp(coef(e)), pe <- exp(-coef(e)))
-    ifelse(ee == "4", ci <- exp(confint(e)[1:(as.integer(cb) + 
-        1), ]), ci <- exp(-confint(e)[1:(as.integer(cb) + 1), 
+    ifelse(ee == "4", ci <- exp(confint(e)[1:(as.integer(cb)), ]), ci <- exp(-confint(e)[1:(as.integer(cb) + 1),
         ]))
-    res <- list(if (exists("summ")) summ, if (exists("kplot")) kplot(), 
-        print("Point Estimate of Ratio(s) = "), print(pe), print("95% Confidence Interval of Ratio(s) = "), 
+    res <- list(if (exists("summ")) summ, if (exists("kplot")) kplot(),
+        print("Point Estimate of Ratio(s) = "), print(pe), print("95% Confidence Interval of Ratio(s) = "),
         print(ci))
     return(res[!sapply(res, is.null)])
 }

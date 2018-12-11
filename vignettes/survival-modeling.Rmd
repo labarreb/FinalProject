@@ -1,10 +1,10 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
-date: "`r Sys.Date()`"
+title: "Survival Modeling"
+author: "Brian LaBarre & Silvia Jakubski"
+date: "December 10, 2018"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Survival Modeling}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,52 +14,229 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library(FinalProject)
 ```
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+# smod() Function
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+## Survival Modeling
 
-## Vignette Info
+This function is intended to be used with the `finalproj()` function that offers the you a choice of what kind of program 
+you want to initiate.  It can, though, be used on its own to aid in survival modeling and analysis.
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+### Initialize the Function
 
-## Styles
+The prompt/menu is initialized by typing `smod()` in the console (or through the use of `finalproj()`).  From there, you are asked for input of a dataset.  If you are unsure of the datasets available, try typing `data()` into the console, and it will provide a list of all currently available datasets in the environment.  Once your dataset is selected, you will be asked to begin building your model.
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+```{r}
+# smod()
+# Name of your dataset:
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+### Set-Up Your Model
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+In this part of the function, you are asked for inputs of time variable (the measurement for which survival is being measured over), the event indicator variable (usually "delta","status", or "event"), number of predictor variables, the predictor variable(s) (if any), and inclusion of an interaction term (if applicable).  You can only have one response variable and one interaction term, but you can have as many predictor variables as are in the dataset (including zero).
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+The benefit of this selection system is that you don't have to remember nor type in the variable names for the model.  The function is designed to bring up all the available selections, which are then chosen by the number preceeding the variable.
 
-## More Examples
+```{r}
+### Input lines are Indented
 
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+##### Time Variable:  
+# 
+# 1: litter
+# 2: rx
+# 3: time
+# 4: status
+# 5: sex
+# 
+# Selection: 3
+##### Event Indicator Variable:  
+# 
+# 1: litter
+# 2: rx
+# 3: time
+# 4: status
+# 5: sex
+# 
+# Selection: 4
+##### How many covariates?: 2
+##### Which Predictor Variables to Include:  
+# 
+# 1: litter
+# 2: rx
+# 3: time
+# 4: status
+# 5: sex
+# 
+# Selection: 2
+##### Which Predictor Variables to Include:  
+# 
+# 1: litter
+# 2: rx
+# 3: time
+# 4: status
+# 5: sex
+# 
+# Selection: 5
+##### Would you like an interaction term? 
+# 
+# 1: Y
+# 2: N
+```
+*These variables were produced from the dataset `rats` from the `survival` package
 
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+### Choose Your Model (with `survmod()`)
+
+This step is fairly simple - now that your model has been chosen, you can choose which type of model you would like to use in your analysis.  Options 1-3 are parametric, and option 4 is semi-parametric.  You may certainly choose any of these, but be sure you know which model is appropriate for your data. 
+
+```{r}
+##### Which Survival Model?:  
+# 
+# 1: Weibull Model
+# 2: Exponential Model
+# 3: Log-Logistic Model
+# 4: Cox PH Model
 ```
 
-Also a quote using `>`:
+### Output Options
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+In the final series of prompts, you are asked what kind of output you desire.  You are asked whether you would like a summary (which contains coefficients and p-values (frequently requested items)), and whether you would like a plot (if you have chosen just one covariate and a parametric distribution).  The point estimate and 95% confidence intervals of the ratios (rate ratios for models 1-3, hazard ratios for model 4) are given, regardless of what options you select.
+
+```{r}
+# Would you like a summary? 
+# 
+# 1: Y
+# 2: N
+# 
+# 
+# Selection: 1
+# Would you like a plot of the survival curve? 
+# 
+# 1: Y
+# 2: N
+
+```
+
+## Examples
+
+*For this set of examples, we will use the built-in dataset `rats`.*  
+
+
+**Output for: Weibull Distribution, interaction term, two predictor variables: Surv(time,status)~rx+sex+rx\*sex**
+```{r}
+# [1] "Point Estimate of Ratio(s) = "
+#  (Intercept)           rx         sexm      rx:sexm 
+# 0.0068401814 1.2705978941 0.5478634358 0.0003720982 
+# [1] "95% Confidence Interval of Ratio(s) = "
+#                   2.5 %      97.5 %
+# (Intercept) 0.008045893 0.005815151
+# rx          1.513467502 1.066702131
+# sexm        0.834073742 0.359865476
+# [[1]]
+# 
+# Call:
+# survreg(formula = as.formula(frmla), data = dtst)
+#               Value Std. Error     z      p
+# (Intercept)  4.9849     0.0828 60.18 <2e-16
+# rx          -0.2395     0.0892 -2.68 0.0073
+# sexm         0.6017     0.2144  2.81 0.0050
+# rx:sexm      7.8964     0.0000   Inf <2e-16
+# Log(scale)  -1.3281     0.1406 -9.44 <2e-16
+# 
+# Scale= 0.265 
+# 
+# Weibull distribution
+# Loglik(model)= -260   Loglik(intercept only)= -287.1
+# 	Chisq= 54.23 on 3 degrees of freedom, p= 1e-11 
+# Number of Newton-Raphson Iterations: 9 
+# n= 300 
+
+```
+ 
+  
+**Output for: Log-Logistic Distribution, one predictor variable: Surv(time,status)~rx**
+```{r}
+# [1] "Point Estimate of Ratio(s) = "
+# (Intercept)          rx 
+# 0.006009807 1.215488141 
+# [1] "95% Confidence Interval of Ratio(s) = "
+#                   2.5 %      97.5 %
+# (Intercept) 0.007277928 0.004962646
+# rx          1.454843674 1.015512145
+# [[1]]
+# 
+# Call:
+# survreg(formula = as.formula(frmla), data = dtst, dist = "loglogistic")
+#               Value Std. Error     z      p
+# (Intercept)  5.1144     0.0977 52.36 <2e-16
+# rx          -0.1951     0.0917 -2.13  0.033
+# Log(scale)  -1.3456     0.1406 -9.57 <2e-16
+# 
+# Scale= 0.26 
+# 
+# Log logistic distribution
+# Loglik(model)= -284.7   Loglik(intercept only)= -287.2
+# 	Chisq= 4.85 on 1 degrees of freedom, p= 0.028 
+# Number of Newton-Raphson Iterations: 5 
+# n= 300 
+
+```
+![Plot with survival curve for log-logistic distribution](C:\Users\Brian\Desktop\Program\FinalProject\Rplot_r5.png)  
+  
+**Output for: Exponential Distribution, no predictor variables: Surv(time,status)~1**
+```{r}
+# [1] "Point Estimate of Ratio(s) = "
+# (Intercept) 
+# 0.001547988 
+# [1] "95% Confidence Interval of Ratio(s) = "
+#       2.5 %      97.5 % 
+# 0.002094646 0.001143995 
+# [[1]]
+# 
+# Call:
+# survreg(formula = as.formula(frmla), data = dtst, dist = "exponential")
+#             Value Std. Error    z      p
+# (Intercept) 6.471      0.154 41.9 <2e-16
+# 
+# Scale fixed at 1 
+# 
+# Exponential distribution
+# Loglik(model)= -313.8   Loglik(intercept only)= -313.8
+# Number of Newton-Raphson Iterations: 5 
+# n= 300 
+
+```
+ 
+
+  
+**Output for: Cox Proportional Hazards Model, One predictor variables: Surv(time,status)~rx**
+```{r}
+# [1] "Point Estimate of Ratio(s) = "
+#       rx 
+# 2.041606 
+# [1] "95% Confidence Interval of Ratio(s) = "
+#    2.5 %   97.5 % 
+# 1.114653 3.739419 
+# [[1]]
+# Call:
+# coxph(formula = as.formula(frmla), data = dtst)
+# 
+#   n= 300, number of events= 42 
+# 
+#      coef exp(coef) se(coef)     z Pr(>|z|)  
+# rx 0.7137    2.0416   0.3088 2.311   0.0208 *
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+#    exp(coef) exp(-coef) lower .95 upper .95
+# rx     2.042     0.4898     1.115     3.739
+# 
+# Concordance= 0.565  (se = 0.038 )
+# Rsquare= 0.017   (max possible= 0.777 )
+# Likelihood ratio test= 5.23  on 1 df,   p=0.02
+# Wald test            = 5.34  on 1 df,   p=0.02
+# Score (logrank) test = 5.57  on 1 df,   p=0.02
+```
+
+
