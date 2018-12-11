@@ -1,0 +1,585 @@
+---
+title: "Final Report: TPRSP"
+author: "Brian LaBarre and Silvia Jakubski"
+date: "December 10, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval=FALSE, echo = TRUE)
+library(ggplot2)
+```
+
+# Introduction
+TPRP means Text Prompt Regression and Survival Package.
+
+## Background:
+There are four major functions with text prompts in the package. The first one is for regression models, second one is for survival models, and the third and fourth are for roll die and coin flip respectively and are included mostly for fun. All of the required vignettes for the functions (mlr(), smod(), rcoin(), and rdie()) and R documentations are uploaded on the github. The link to the github folder is: https://github.com/labarreb/FinalProject/ 
+
+## Motivation:
+Sometimes it is difficult to remember all the details of the regression and survival models and make sure one adds correct functions to perform regression, get basic plots from the regression, perform various survival analyses, and get appropriate plots. A text prompt based package will make this process streamlined without having to remember all the details of the required functions to perform such analyses and plots generation. It will be particularly important to students and users who are not advanced in the use of R program or the statistical theory behind the regression and survival analyses. Since the use of this package still requires the understanding of the dataset, included variables and their types, and the logic and basic principles behind the regression and survival models, it does not take away from the learning process of the students.
+
+## Contents:
+The short description of the overall functions:
+
+• finalproj.r #initiates choice
+
+• mlr.r #regression prompt
+
+• smod.r #survival prompt
+
+• regr.r #regression model choice
+
+• survmod.r #survival model choice
+
+• rdie.r #roll die
+
+• rcoin.r #flip coin
+
+• Data (Just vectors):
+
+• reglist.rda #names of regression models
+
+• survlist.rda #names of survival models
+
+We have two major functions and two fun functions in this package and one initialization function:
+
+###1.	Initialization function: final(proj)
+•	Description: finalproj() function will initialize the text prompts. This function will offer selection to the users with the text prompt “What would you like to perform?”. The options include “Regression Model”, “Survival Model”, “Flip Coin”, and “Roll Die”. Once the selection is made, it will prompt the user to the particular function coded under the selection.
+
+
+###2.	Regression: mlr()
+•	Description: This is one of our major functions and it performs the regression on the selected variables of the input dataset. The forms of regressions included in the function are: Linear Regression, Poisson Regression, Negative Binomial Regression, Logistic Regression, and Logistic Regression with Probit Link. All of these options are included in a single nested function and users will be guided with text prompt along the way. For all the regression models, the function also includes the option of performing the regression analysis with or without variable interactions. When option for interaction is selected, the user is prompted to selected two variables which will be used for the interaction part of the model. This provides the users with even more options and power to perform various analysis for their data set. The function provides options to print the regression summary as well as diagnostic plots. The use of this functions does require the understanding of the type of variables of the dataset in question. For example, the user should be aware of whether a variable is a factor variable and may need to convert to factor variable prior to using this function for certain regression models. The step by step details of this function is detailed in the methods section below.
+
+
+###3.	Survival: smod()
+•	Description: This is the second of our two major functions and this performs the survival analysis on the input dataset. The forms of survival analyses included in the function are: Weibull Model, Exponential Model, Log-Logistic Model, and Cox PH Model. All of these options are included in a single nested function and users will be guided with text prompt along the way. For all the survival models, the function also includes the option of performing the survival analysis with or without predictor variable interactions. When option for interaction is selected, the user is prompted to selected two variables which will be used for the interaction part of the model. This provides the users with even more options and power to perform various analysis for their data set. The function provides options to print the survival analyses summary as well as survival curve plots. The step by step details of this function is detailed in the methods section below.
+
+
+###4.	Flip Coin: rcoin()
+•	Description: This function allows the user to simply perform a random coin flip and get an outcome of either “Heads” or “Tails”.
+
+###5.	Roll Die: rdie()
+•	Description: This function allows the users to simply perform a random roll die and get an outcome between 1 to 6.
+
+## Method
+Describe the package
+
+### Functions
+### finalproj() 
+This “if else” function initializes the text prompt system and displays the following text prompt for users:  “What would you like to perform?”. The selections include:
+1.	Regression
+2.	Roll Die
+3.	Flip Coin
+The selection will direct the users to the next step which are governed by the execution of the functions mlr(), rdie(), or rcoin() respectively for the selection of “1”, “2”, or “3”.
+
+### mlr()
+Selection of option “1” from the prompt above will activate the execution of large nested mlr() function.
+
+##### Step1
+First, the readline() function will print the text prompt: “Name of your dataset:”. At this step, users simply need to input the name of the dataset. The dataset has to be loaded to R or available in R studio packages.
+
+##### Step2
+After the input of the dataset, names() function will extract the variables’ names from the data set and offer for selection under the prompt “Response Variable (X):”. The users simply need to input the integer that corresponds to the response variable of choice.
+
+##### Step3
+The as.integer(readline()) function will then ask the users about the numbers of predictor variables with the following prompt “How many predictor variables?:”, and the input is recoded with numeric() function along with for() loop that allows for selection of multiple variables, one at a time, from the list of printed variables that are obtained with names() function included in the for() loop. A paste() function with collapse = “+” will then collapse the selected predicted variable names with + in between.
+
+##### Step4
+After the selection of the predictor variables, the users are presented with the prompt “Would you like interaction term?:”, with the menu(c()) function   offering the choice of “Y” for yes and “N” for no. If the users select option “Y”, this executes another for() loop function similar to the ones for   predictor variables selection printing the options to select two variables, one after the other. As in the previous step, a paste() function with collapse = “*” will then collapse the interaction variables with the interaction term “*” in between the variables. Another paste() function with sep= “+”  will then join the non-interaction variables with the interaction variables.
+
+##### Step5
+Two more paste() functions then join the response variable with the predictor variables with “~” to denote the response variable to the predictor variables interaction.
+
+##### Step6
+After the selection of the interaction variables (or selection of option “N” for the prompt “Would you like interaction term?:”), users are presented with the prompt “Which Regression to Perform:”. This is accompanied with the menu list of regression as follows:
+1.	Linear Regression
+2.	Poisson (Count Outcome)
+3.	Negative Binomial (Count Outcome)
+4.	Logistic Model (Binary Outcome)
+5.	Probit Regression (Binary Outcome)
+
+##### Step7
+Once the users make the selection, regression function is automatically selected based on the selection term. Additionally, the prompt “Would you like a summary?” will be presented with the selection options “Y” and “N” provided with the use of menu(c()) function. If users select the option “Y”, this will execute the summary() function for the selected regression model.
+
+##### Step8
+After the users make the selection for summary, next prompt will ask them “Would you like plot(s)?” with the selection options “Y” and “N” provided with the use of menu(c()) function. If users select the option “Y”, this will execute the plot() functions for the selected regression model. If there is only one predictor variable, the plot will be a linear regression plot of response vs. predictor variable with a regression abline. If there are more than one predictor variables selected, the plots returned will be regression diagnostic plots.
+
+##### Step9
+The summary and plots are returned with the list(if exists()) function.
+
+### smod()
+Selection of option “2” from the prompt of finalproj() function  will activate the execution of smod() function
+
+##### Step1
+First, the readline() function will print the text prompt: “Name of your dataset:”. At this step, users simply need to input the name of the dataset. The dataset has to be loaded to R or available in R studio packages.
+
+##### Step2
+After the input of the dataset, names() function will extract the variables’ names from the data set and offer for selection under the prompt “Time Variable:” followed by the prompt “Event Indicator Variable:” The users simply need to input the integer that corresponds to the time variable and event indicator variable of choice.
+
+##### Step3
+The as.integer(readline()) function will then ask the users about the numbers of covariates with the following prompt “How many covariates?:”, and the input is recoded with numeric() function along with if else and for() loop that allows for selection of multiple covariates, one at a time, from the list of printed variables that are obtained with names() function included in the for() loop. These covariates are listed under the prompt “Which Predictor Variables to Include:”. A paste() function with collapse = “+” will then collapse the selected predicted variable names with + in between.
+
+##### Step4
+After the selection of the predictor variables/covariates, the users are presented with the prompt “Would you like interaction term?:”, with the menu(c()) function offering the choice of “Y” for yes and “N” for no. If the users select option “Y”, this executes another if() and for() loop functions similar to the ones for predictor variables selection printing the options to select two variables, one after the other. As in the previous step, a paste() function with collapse = “*” will then collapse the interaction variables with the interaction term “*” in between the variables. Another paste() function with sep= “+”  will then join the non-interaction variables with the interaction variables.
+
+##### Step5
+Two more paste() functions then join the response variable with the predictor variables with “~” to denote the response variable to the predictor variables interaction.
+
+##### Step6
+After the selection of the interaction variables (or selection of option “N” for the prompt “Would you like interaction term?:”), users are presented with the prompt “Which Survival Model?:”. This is accompanied with the menu list of survival models as follows:
+1.	Weibull Model
+2.	Exponential Model
+3.	Log-Logistic Model
+4.	Cox PH Model
+
+##### Step7
+Once the users make the selection, survival function is automatically selected based on the selection term. Additionally, the prompt “Would you like a summary?” will be presented with the selection options “Y” and “N” provided with the use of menu(c()) function. If users select the option “Y”, this will execute the summary() function for the selected rsurvival model.
+
+##### Step8
+After the users make the selection for summary, next prompt will ask them “Would you like a plot of the survival curve?” with the selection options “Y” and “N” provided with the use of menu(c()) function. If users select the option “Y”, this will execute the plot() functions for the selected survival model and return Survival Curve.
+
+##### Step9
+The summary and plots are returned with the ifelse() and if() functions.
+
+### rdie()
+Selection of option “4” from the prompt of finalproj() function  will activate the execution of rdie() function
+¬	This simple function returns a random number between 1 and 6 as one would with a random roll of a die.
+
+### rcoin()
+Selection of option “3” from the prompt of finalproj() function  will activate the execution of rcoin() function
+¬	This simple function returns randomly selected “Heads” or “Tails” as one would with the flip of a coin.
+
+## Result
+
+### R codes used in the package
+
+```{r, eval=FALSE, echo=TRUE}
+library(MASS)
+library(survival)
+mlr <- function() {
+  b <- readline(prompt = "Name of your dataset: ")
+  bb <- get(b)
+  c <- menu(names(bb), title = "Response Variable (X): ")
+  cc <- names(bb)[c]
+  cb <- as.integer(readline(prompt = "How many predictor variables?: "))
+  ccc <- numeric(cb)
+  for (i in 1:cb) {
+    ccc[i] <- menu(names(bb), title = "Which Predictor Variables to Include: ")
+    ccc[i] <- names(bb)[as.integer(ccc[i])]
+  }
+  d <- paste(ccc, collapse = "+")
+  intt <- menu(c("Y", "N"), title = "Would you like an interaction term?")
+  if (intt == "1") {
+    abc <- numeric(2)
+    for (i in 1:2) {
+      abc[i] <- menu(names(bb), title = "Which Predictor Variables to Include: ")
+      abc[i] <- names(bb)[as.integer(abc[i])]
+    }
+    abc <- paste(abc, collapse = "*")
+    d <- paste(d, abc, sep = "+")
+  }
+  dd <- paste(cc, "~", sep = "")
+  ddd <- paste(dd, d, sep = "")
+  ee <- menu(reglist, title = "Which Regression to Perform: ")
+  e <- regr(ee, ddd, bb)
+  h <- menu(c("Y", "N"), title = "Would you like a summary?")
+  if (h == "1") 
+    summ <- summary(e)
+  j <- menu(c("Y", "N"), title = "Would you like a plot(s)?")
+  if (j == "1" && cb != 1) {
+    jplot <- function() {
+      par(mfrow = c(2, 2))
+      plot(e)
+    }
+  } else if (j == "1" && cb == 1) {
+    kplot <- function() {
+      par(mfrow = c(1, 1))
+      plot(as.formula(ddd), data = bb, col = "green", pch = 19, 
+           xlab = ccc[1], ylab = cc, main = "Linear Regression Plot")
+      abline(e)
+    }
+  }
+  res <- list(if (exists("summ")) {
+    summ
+  }, if (exists("jplot")) {
+    jplot()
+  }, if (exists("kplot")) {
+    kplot()
+  })
+  return(res[!sapply(res, is.null)])
+}
+smod <- function() {
+  b <- readline(prompt = "Name of your dataset: ")
+  bb <- get(b)
+  c2 <- menu(names(bb), title = "Time Variable: ")
+  cc2 <- names(bb)[c2]
+  c <- menu(names(bb), title = "Event Indicator Variable: ")
+  cc <- names(bb)[c]
+  cc <- paste("Surv(",cc2,",",cc,")",sep="")
+  cb <- as.integer(readline(prompt = "How many covariates?: "))
+  if (cb=="0") {ccc <- 1}
+  else{
+    c3 <- ccc <- numeric(cb)
+    for (i in 1:cb) {
+      c3[i] <- menu(names(bb), title = "Which Predictor Variables to Include: ")
+      ccc[i] <- names(bb)[as.integer(c3[i])]
+    }
+  }
+  d <- paste(ccc, collapse = "+")
+  if (cb>1) {
+    intt <- menu(c("Y", "N"), title = "Would you like an interaction term?")
+    if (intt == "1") {
+      abc <- numeric(2)
+      for (i in 1:2) {
+        abc[i] <- menu(names(bb), title = "Which Predictor Variables to Include: ")
+        abc[i] <- names(bb)[as.integer(abc[i])]
+      }
+      abc <- paste(abc, collapse = "*")
+      d <- paste(d, abc, sep = "+")
+    }
+  }
+  dd <- paste(cc, "~", sep = "")
+  ddd <- paste(dd, d, sep = "")
+  ee <- menu(survlist, title = "Which Survival Model?: ")
+  e <- survmod(ee, ddd, bb)
+  h <- menu(c("Y", "N"), title = "Would you like a summary?")
+  if (h == "1") 
+    summ <- summary(e)
+  if (cb==1 && length(unique(rats[,as.integer(c3)]))) {
+    j <- menu(c("Y", "N"), title = "Would you like a plot of the survival curve?")
+    if (j == "1") {
+      kplot <- function() {
+        par(mfrow = c(1, 1))
+        plot(survfit(as.formula(ddd), data = bb),col = c(2,3), 
+             xlab = cc2, ylab = "Survival", main = "Survival Curve")
+        legend("bottomleft",col = c(2,3),lty=1,title=names(bb)[c3],legend =
+                 c(unique(bb[,as.integer(c3)])[1],unique(bb[,as.integer(c3)])[2]))
+      }
+    }
+  }
+  ifelse (ee=="4",pe <- exp(coef(e)),pe <- exp(-coef(e)))
+  ifelse (ee=="4",ci <- exp(confint(e)[1:(as.integer(cb)+1),]),ci <- exp(-confint(e)[1:(as.integer(cb)+1),]))
+  res <- list(if (exists("summ")) summ, 
+              if (exists("kplot")) kplot(),
+              print("Point Estimate of Ratio(s) = "), 
+              print(pe),
+              print("95% Confidence Interval of Ratio(s) = "), 
+              print(ci)
+  )
+  return(res[!sapply(res, is.null)])
+}
+regr <- function(x, frmla, dtst) {
+  if (x == "1") 
+    return(lm(as.formula(frmla), data = dtst))
+  if (x == "2") 
+    return(glm(as.formula(frmla), family = poisson(), data = dtst))
+  if (x == "3") 
+    return(glm.nb(as.formula(frmla), data = dtst, control = glm.control(maxit = 1000)))
+  if (x == "4") 
+    return(glm(as.formula(frmla), family = binomial(), data = dtst))
+  if (x == "5") 
+    return(glm(as.formula(frmla), family = binomial(link = "probit"), 
+               data = dtst))
+}
+
+reglist <- c("Linear Regression", "Poisson (Count Outcome)", 
+             "Negative Binomial (Count Outcome)", "Logistic Model (Binary Outcome)", 
+             "Probit Regression (Binary Outcome)")
+
+rdie <- function() {
+  return(sample.int(6, 1))
+}
+rcoin <- function() {
+  return(sample(c("Heads", "Tails"), 1))
+}
+  survmod <- function(x, frmla, dtst) {
+    if (x == "1") 
+      return(survreg(as.formula(frmla), data = dtst))
+    if (x == "2") 
+      return(survreg(as.formula(frmla), data = dtst, dist = "exponential"))
+    if (x == "3") 
+      return(survreg(as.formula(frmla), data = dtst, dist = "loglogistic"))
+    if (x == "4") 
+      return(coxph(as.formula(frmla), data = dtst))
+  }
+  survlist <- c("Weibull Model", "Exponential Model", 
+                "Log-Logistic Model", "Cox PH Model")
+  finalproj <- function() {
+              a <- menu(c("Regression Model", "Survival Model", "Flip Coin", "Roll Die"), graphics = TRUE, 
+                        title = "What would you like to perform?")
+              if (a == 1) {
+                return(mlr())
+              } else if (a == 2) {
+                return(smod())
+              } else if (a == 3) {
+                return(rcoin())
+              } else if (a == 4) {
+                return(rdie())
+              }
+  }
+finalproj() 
+
+###Show the output
+
+Poisson regression (with interaction) example output using the dataset: mtcars
+
+# > finalproj()
+# What would you like to perform? 
+
+# 1: Regression Model
+# 2: Survival Model
+# 3: Flip Coin
+# 4: Roll Die
+
+# Selection: 1
+# Name of your dataset: mtcars
+# Response Variable (X):  
+
+# 1: mpg    2: cyl    3: disp   4: hp     5: drat   6: wt     7: qsec   8: vs     9: am    10: gear
+# 11: carb  
+
+# Selection: 1
+# How many predictor variables?: 2
+# Which Predictor Variables to Include:  
+
+# 1: mpg    2: cyl    3: disp   4: hp     5: drat   6: wt     7: qsec   8: vs     9: am    10: gear
+# 11: carb  
+
+# Selection: 2
+# Which Predictor Variables to Include:  
+
+# 1: mpg    2: cyl    3: disp   4: hp     5: drat   6: wt     7: qsec   8: vs     9: am    10: gear
+# 11: carb  
+
+# Selection: 3
+# Would you like an interaction term? 
+
+# 1: Y
+# 2: N
+
+# Selection: Y
+# Which Predictor Variables to Include:  
+
+# 1: mpg    2: cyl    3: disp   4: hp     5: drat   6: wt     7: qsec   8: vs     9: am    10: gear
+# 11: carb  
+
+# Selection: 4
+# Which Predictor Variables to Include:  
+
+# 1: mpg    2: cyl    3: disp   4: hp     5: drat   6: wt     7: qsec   8: vs     9: am    10: gear
+# 11: carb  
+
+# Selection: 5
+# Which Regression to Perform:  
+
+# 1: Linear Regression
+# 2: Poisson (Count Outcome)
+# 3: Negative Binomial (Count Outcome)
+# 4: Logistic Model (Binary Outcome)
+# 5: Probit Regression (Binary Outcome)
+
+# Selection: 2
+# Would you like a summary? 
+
+# 1: Y
+# 2: N
+
+# Selection: Y
+# Would you like a plot(s)? 
+
+# 1: Y
+# 2: N
+
+#Selection: Y
+#[[1]]
+
+# Call:
+# glm(formula = as.formula(frmla), family = poisson(), data = dtst)
+
+# Deviance Residuals: 
+#     Min        1Q    Median        3Q       Max  
+# -0.85452  -0.32908  -0.08868   0.29321   1.19357  
+
+# Coefficients:
+#              Estimate Std. Error z value Pr(>|z|)    
+# (Intercept)  3.0309531  0.7971145   3.802 0.000143 ***
+# cyl         -0.0293053  0.0632859  -0.463 0.643320    
+# disp        -0.0011087  0.0009268  -1.196 0.231604    
+# hp           0.0012525  0.0060676   0.206 0.836453    
+# drat         0.1413898  0.1915092   0.738 0.460337    
+# hp:drat     -0.0006274  0.0015196  -0.413 0.679709    
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+# (Dispersion parameter for poisson family taken to be 1)
+
+#    Null deviance: 54.524  on 31  degrees of freedom
+# Residual deviance: 10.062  on 26  degrees of freedom
+# AIC: Inf
+
+# Number of Fisher Scoring iterations: 4
+
+```
+
+![](/Users/Puru/Desktop/Rplot7.png)
+
+```{r, eval=FALSE, echo=TRUE}
+
+# Weibull survival model (without interaction) using rats dataset
+
+# > finalproj()
+# What would you like to perform? 
+
+# 1: Regression Model
+# 2: Survival Model
+# 3: Flip Coin
+# 4: Roll Die
+
+# Selection: 2
+# Name of your dataset: rats
+# Time Variable:  
+
+# 1: litter
+# 2: rx
+# 3: time
+# 4: status
+# 5: sex
+
+# Selection: 3
+# Event Indicator Variable:  
+
+# 1: litter
+# 2: rx
+# 3: time
+# 4: status
+# 5: sex
+
+# Selection: 4
+# How many covariates?: 2
+# Which Predictor Variables to Include:  
+
+# 1: litter
+# 2: rx
+# 3: time
+# 4: status
+# 5: sex
+
+# Selection: 1
+# Which Predictor Variables to Include:  
+
+# 1: litter
+# 2: rx
+# 3: time
+# 4: status
+# 5: sex
+
+# Selection: 2
+# Would you like an interaction term? 
+
+# 1: Y
+# 2: N
+
+# Selection: N
+# Which Survival Model?:  
+
+# 1: Weibull Model
+# 2: Exponential Model
+# 3: Log-Logistic Model
+# 4: Cox PH Model
+
+# Selection: 1
+# Would you like a summary? 
+
+# 1: Y
+# 2: N
+
+# Selection: Y
+# [1] "Point Estimate of Ratio(s) = "
+# (Intercept)      litter          rx 
+# 0.005160579 1.002046823 1.219207143 
+# [1] "95% Confidence Interval of Ratio(s) = "
+#                  2.5 %      97.5 %
+# (Intercept) 0.006791786 0.003921144
+# litter      1.004977920 0.999124276
+# rx          1.449137464 1.025759180
+# [[1]]
+
+# Call:
+# survreg(formula = as.formula(frmla), data = dtst)
+#               Value Std. Error     z      p
+# (Intercept)  5.26671    0.14014 37.58 <2e-16
+# litter      -0.00204    0.00149 -1.37  0.170
+# rx          -0.19820    0.08815 -2.25  0.025
+# Log(scale)  -1.30414    0.14219 -9.17 <2e-16
+
+# Scale= 0.271 
+
+# Weibull distribution
+# Loglik(model)= -283.4   Loglik(intercept only)= -287.1
+#	Chisq= 7.47 on 2 degrees of freedom, p= 0.024 
+# Number of Newton-Raphson Iterations: 9 
+# n= 300 
+
+
+# [[2]]
+# [1] "Point Estimate of Ratio(s) = "
+
+# [[3]]
+# (Intercept)      litter          rx 
+# 0.005160579 1.002046823 1.219207143 
+
+# [[4]]
+# [1] "95% Confidence Interval of Ratio(s) = "
+
+# [[5]]
+#                  2.5 %      97.5 %
+# (Intercept) 0.006791786 0.003921144
+# litter      1.004977920 0.999124276
+# rx          1.449137464 1.025759180
+
+
+# Example of Coin Flip
+# > finalproj()
+# What would you like to perform? 
+
+# 1: Regression Model
+# 2: Survival Model
+# 3: Flip Coin
+# 4: Roll Die
+
+# Selection: 3
+# [1] "Tails"
+
+
+# Example of Die Roll
+# > finalproj()
+# What would you like to perform? 
+
+# 1: Regression Model
+# 2: Survival Model
+# 3: Flip Coin
+# 4: Roll Die
+
+# Selection: 4
+# [1] 4
+```
+
+
+##Conclusion
+
+###Discussion
+
+1.	This document provides an outline of the background, motivation behind, and description of the package as well as the description of the functions included in the package. This also provides description of step by step execution of functions included in the nested functions of this package. This package makes it easier for users to easily perform various regression models and survival analyses and output the summary and diagnostic plots for the selected regression and survival models. For this package to be a formal package in CRAN and to be a package that could be used by users with either advanced or basic understanding of the R language and statistical principles, more functions should be added to perform complex analysis such as model selection as well as more options for various types of plots should be included.
+
+2.	A text prompt based package may also be an important tool to be utilized by educators of statistics to visually demonstrate the regression and survival models without having to confuse the students with the language of regression and survival models in R codes. Once more functions are added, including options for various types of plots, this package could be an important tool for everyone.
+
+### Future Work
+1.	Add functions for more regression models
+2.	Add functions for different options in the output plots including the options to input user defined titles, axes labels, and legends
+3.	Add functions for extracting coefficients, p values, confidence interval, and prediction for variables of interest
+4.	Add functions for model selection
+
+
+
+
